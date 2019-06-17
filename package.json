@@ -1,6 +1,6 @@
 {
   "name": "icon-extract",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Retrieve Icons for executables",
   "scripts": {
     "autogypi": "autogypi",
@@ -9,9 +9,9 @@
   },
   "author": "",
   "license": "GPL-3.0",
-  "devDependencies": {
+  "dependencies": {
     "autogypi": "^0.2.2",
-    "nan": "^2.4.0",
-    "node-gyp": "^3.4.0"
+    "nan": "^2.14.0",
+    "node-gyp": "^5.0.0"
   }
 }
