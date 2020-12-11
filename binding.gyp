@@ -5,10 +5,12 @@
       "includes": [
         "auto.gypi"
       ],
-      "include-dirs": [
-        "test",
-        "<!(node -e \"require('nan')\")"
+      "include_dirs": [
+        "<!(node -p \"require('node-addon-api').include_dir\")"
       ],
+      "dependencies": [
+        "<!(node -p \"require('node-addon-api').gyp\")"
+      ], 
       "sources": [
         "src/IconExtractor.cpp"
       ],
@@ -26,35 +28,6 @@
             "-lGdiplus"
           ],
         }],
-        ['OS=="linux"', {
-          'sources': [
-            "src/IconExtractorLinux.cpp"
-          ],
-          "cflags!": [ "-fno-exceptions" ],
-          "cflags_cc!": [ "-fno-exceptions" ],
-          "cflags": [
-            "-fexceptions"
-          ],
-          "cflags_cc": [
-            "-fexceptions"
-          ]
-        }],
-        ['OS=="mac"', {
-          'sources': [
-	          "src/IconExtractorMacOSX.cpp"
-          ],
-          "cflags!": [ "-fno-exceptions" ],
-          "cflags_cc!": [ "-fno-exceptions" ],
-          "cflags": [
-            "-fexceptions"
-          ],
-          "cflags_cc": [
-            "-fexceptions"
-          ],
-          "xcode_settings": {
-            "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
-          }
-        }]
       ]
     }
   ]

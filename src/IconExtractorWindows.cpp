@@ -31,7 +31,7 @@ std::wstring string_cast(const char *source, size_t sourceLength = std::numeric_
     if (outLength == 0) {
       throw std::runtime_error("string conversion failed");
     }
-    while (result[outLength - 1] == L'\0') {
+    while (result[static_cast<size_t>(outLength) - 1] == L'\0') {
       result.resize(--outLength);
     }
   }

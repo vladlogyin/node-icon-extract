@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #ifdef WIN32
 #include "IconExtractorWindows.h"
 #define IconExtractorImpl IconExtractorWindows
@@ -10,17 +10,14 @@
 #define IconExtractorImpl IconExtractorLinux
 #endif
 
-using namespace Nan;
-using namespace v8;
-
 IconExtractorImpl &instance() {
   static IconExtractorImpl instance;
   return instance;
 }
 
-class IconExtractorWorker : public AsyncWorker {
+class IconExtractorWorker : public Napi::AsyncWorker {
 public:
-  IconExtractorWorker(Callback *callback,
+  IconExtractorWorker(const Napi::Function &callback,
     const std::string &executable,
     const std::string &output,
     int width,
@@ -38,20 +35,12 @@ public:
       instance().extractIconToPngFile(m_Executable, m_Output, m_Width, m_Format);
     }
     catch (const std::exception &e) {
-      SetErrorMessage(e.what());
+      SetError(e.what());
     }
   }
 
-  // We have the results, and we're back in the event loop.
-  void HandleOKCallback() {
-    Nan::HandleScope scope;
-
-    Local<Value> argv[] = {
-      Null(),
-      Boolean::New(Isolate::GetCurrent(), true)
-    };
-
-    callback->Call(2, argv);
+  virtual void OnOK() override {
+    Callback().Call(Receiver().Value(), std::initializer_list<napi_value>{ Env().Null(), Napi::Boolean::New(Env(), true) });
   }
 
 private:
@@ -64,14 +53,13 @@ private:
 
 };
 
+/*
+
 NAN_METHOD(extractIconToFile) {
-  String::Utf8Value executable(info[0]->ToString());
-  String::Utf8Value output(info[1]->ToString());
   int width = To<int>(info[2]).FromJust();
-  String::Utf8Value format(info[3]->ToString());
   Callback *callback = new Callback(info[4].As<Function>());
 
-  AsyncQueueWorker(new IconExtractorWorker(callback, *executable, *output, width, *format));
+  AsyncQueueWorker(new IconExtractorWorker(callback, *Nan::Utf8String(info[0]), *Nan::Utf8String(info[1]), width, *Nan::Utf8String(info[3])));
 }
 
 NAN_MODULE_INIT(Init) {
@@ -80,3 +68,24 @@ NAN_MODULE_INIT(Init) {
 }
 
 NODE_MODULE(iconextract, Init)
+
+*/
+
+
+Napi::Value extractIconToFile(const Napi::CallbackInfo& info) {
+  Napi::Function callback = info[4].As<Napi::Function>();
+
+  auto worker = new IconExtractorWorker(callback, info[0].ToString(), info[1].ToString(), info[2].ToNumber(), info[3].ToString());
+
+  worker->Queue();
+  return info.Env().Undefined();
+}
+
+
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  exports.Set("extractIconToFile", Napi::Function::New(env, extractIconToFile));
+  return exports;
+}
+
+NODE_API_MODULE(iconExtract, Init)
+
