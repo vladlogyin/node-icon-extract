@@ -28,6 +28,19 @@
             "-lGdiplus"
           ],
         }],
+        ['OS=="linux"', {
+          'sources': [
+            "src/IconExtractorLinux.cpp"
+          ],
+          "cflags!": [ "-fno-exceptions" ],
+          "cflags_cc!": [ "-fno-exceptions" ],
+          "cflags": [
+            "-fexceptions"
+          ],
+          "cflags_cc": [
+            "-fexceptions"
+          ]
+        }]
       ]
     }
   ]

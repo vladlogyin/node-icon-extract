@@ -2,10 +2,7 @@
 #ifdef WIN32
 #include "IconExtractorWindows.h"
 #define IconExtractorImpl IconExtractorWindows
-#elif __APPLE__
-#include "IconExtractorMacOSX.h"
-#define IconExtractorImpl IconExtractorMacOSX
-#else
+#elif linux
 #include "IconExtractorLinux.h"
 #define IconExtractorImpl IconExtractorLinux
 #endif
